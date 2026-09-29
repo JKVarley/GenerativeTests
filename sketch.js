@@ -1,14 +1,51 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
-canvas.width = 700;
-canvas.height = 700;
+canvas.width = 1280;
+canvas.height = 720;
 
 let notes = [];
 let velocity = 60;
 
 let frame = 0;
 let drawEvery = 8;
+
+let diatonicChordHues = {
+    "C major": 45,
+    "D minor": 215,
+    "E minor": 270,
+    "F major": 75,
+    "G major": 15,
+    "A minor": 190,
+    "B diminished": 340
+};
+
+
+function randomizeDiatonicChordHues() {
+
+    for (let chord in diatonicChordHues) {
+        diatonicChordHues[chord] =
+            Math.floor(Math.random() * 360);
+    }
+}
+
+
+function clearSketch() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+
+window.addEventListener("keydown", function(event) {
+
+    if (event.key.toLowerCase() == "r" && !event.repeat) {
+        randomizeDiatonicChordHues();
+    }
+
+    if (event.code == "Space" && !event.repeat) {
+        event.preventDefault();
+        clearSketch();
+    }
+});
 
 
 // --------------------------------------------------
@@ -232,6 +269,10 @@ function drawShape(
     }
 
 
+    let stellated =
+        points > 6 && Math.random() < 0.9;
+    let vertexCount = stellated ? points * 2 : points;
+
     let rotation =
         Math.random() * Math.PI * 2;
 
@@ -246,11 +287,18 @@ function drawShape(
 
     // Create points
 
-    for (let i = 0; i < points; i++) {
+    for (let i = 0; i < vertexCount; i++) {
 
         let angle =
-            (Math.PI * 2 / points) * i +
+            (Math.PI * 2 / vertexCount) * i +
             rotation;
+
+        if (stellated) {
+            angle +=
+                (Math.random() - 0.5) *
+                (Math.PI * 2 / vertexCount) *
+                0.55;
+        }
 
         let radius;
 
@@ -272,6 +320,15 @@ function drawShape(
             radius =
                 size *
                 (0.45 + Math.random() * 0.9);
+        }
+
+
+        if (stellated && i % 2 == 0) {
+            radius =
+                size * (0.55 + Math.random() * 1.65);
+        } else if (stellated) {
+            radius =
+                size * (0.03 + Math.random() * 0.42);
         }
 
 
@@ -370,7 +427,7 @@ let y = 70;
 // Movement speed
 
 let movementSpeed = 0.8;
-let baseDriftMultiplier = 1.5;
+let baseDriftMultiplier = 2.1;
 
 
 function updateMovementSpeed() {
@@ -404,11 +461,11 @@ function chooseNewDirection() {
 
 
     // Change direction randomly between
-    // 5 and 14 seconds
+    // 1.8 and 6 seconds
 
     nextDirectionChange =
         performance.now() +
-        (5000 + Math.random() * 9000);
+        (1800 + Math.random() * 4200);
 }
 
 
@@ -465,15 +522,15 @@ function createLSystemPath() {
 
     if (visualState == "calm") {
 
-        angle = 20;
+        angle = 25;
 
     } else if (visualState == "unstable") {
 
-        angle = 45;
+        angle = 75;
 
     } else {
 
-        angle = 70;
+        angle = 115;
     }
 
 
@@ -501,13 +558,15 @@ function createLSystemPath() {
 
             if (command == "+") {
 
-                lSystemAngle += angle;
+                lSystemAngle +=
+                    angle * (0.7 + Math.random() * 0.6);
             }
 
 
             if (command == "-") {
 
-                lSystemAngle -= angle;
+                lSystemAngle -=
+                    angle * (0.7 + Math.random() * 0.6);
             }
         }
     }
@@ -563,12 +622,12 @@ function updateMovement() {
         x +=
             step.x *
             movementSpeed *
-            0.35;
+            0.9;
 
         y +=
             step.y *
             movementSpeed *
-            0.35;
+            0.9;
 
 
         lSystemIndex++;
@@ -780,7 +839,7 @@ function draw() {
 
     if (chord == "C major") {
 
-        hue = 45;
+        hue = diatonicChordHues[chord];
         saturation = 45;
         lightness = 60;
     }
@@ -788,7 +847,7 @@ function draw() {
 
     if (chord == "D minor") {
 
-        hue = 215;
+        hue = diatonicChordHues[chord];
         saturation = 35;
         lightness = 58;
     }
@@ -796,7 +855,7 @@ function draw() {
 
     if (chord == "E minor") {
 
-        hue = 270;
+        hue = diatonicChordHues[chord];
         saturation = 40;
         lightness = 62;
     }
@@ -804,7 +863,7 @@ function draw() {
 
     if (chord == "F major") {
 
-        hue = 75;
+        hue = diatonicChordHues[chord];
         saturation = 40;
         lightness = 62;
     }
@@ -812,7 +871,7 @@ function draw() {
 
     if (chord == "G major") {
 
-        hue = 15;
+        hue = diatonicChordHues[chord];
         saturation = 45;
         lightness = 58;
     }
@@ -820,7 +879,7 @@ function draw() {
 
     if (chord == "A minor") {
 
-        hue = 190;
+        hue = diatonicChordHues[chord];
         saturation = 40;
         lightness = 55;
     }
@@ -828,7 +887,7 @@ function draw() {
 
     if (chord == "B diminished") {
 
-        hue = 340;
+        hue = diatonicChordHues[chord];
         saturation = 45;
         lightness = 55;
     }
