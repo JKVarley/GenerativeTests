@@ -1,4 +1,4 @@
-# Generative Tests
+# Painting with Harmony
 
 A browser-based generative visual sketch that reacts to MIDI input. It listens to notes from a connected MIDI keyboard or controller and transforms the motion, shape, and color of the animation based on the harmonic content and state of the current phrase.
 
